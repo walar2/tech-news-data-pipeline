@@ -1,0 +1,12 @@
+[build-system]
+requires =['setuptools>=68']
+build-backend="setuptoo;s.build_meta"
+
+[project]
+name = "tech-news-pipeline"
+version="0.1.0"
+requires-python=">=3.10"
+dependencies=["aiohttp>=3.11.0","requests>=2.32.0",]
+
+[tool.setuptools.packages.find]
+where =["src"]

@@ -1,0 +1,12 @@
+apache-airflow-providers-postgres>=6.0.0
+apache-airflow-providers-standard>=1.0.0
+apache-airflow-providers-fab>=2.0.0
+requests
+aiohttp>=3.11.0
+psycopg2-binary>=2.9.10
+requests>=2.32.0
+openpyxl==3.1.5
+pytest>=8.0.0
+streamlit
+pandas==2.2.3
+psycopg2-binary==2.9.10

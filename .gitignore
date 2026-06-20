@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Airflow local files
+logs/
+airflow/logs/
+airflow.cfg
+airflow.db
+standalone_admin_password.txt
+
+# Docker / Postgres local data
+postgres_data/
+pgdata/
+data/
+tmp/
+
+# IDE
+.idea/
+.vscode/
+
+# Outputs
+sql/analytics/outputs/
+*.log
+
+# Large generated files
+*.parquet
+*.csv
+*.xlsx
+
+hn_topstories.json
