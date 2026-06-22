@@ -350,14 +350,19 @@ async def fetch_devto_article_details(
     article_ids: Iterable[int],
     semaphore: asyncio.Semaphore,
 ) -> list[dict[str, Any]]:
-    """Fetch DEV article detail responses."""
+    """Fetch DEV article detail responses.
+
+    Some articles returned by the Dev.to list endpoint can later return 404
+    from the detail endpoint. Those records are skipped instead of failing
+    the whole DAG run.
+    """
 
     unique_ids = list(dict.fromkeys(article_ids))
 
     if not unique_ids:
         return []
 
-    payloads = await asyncio.gather(
+    results = await asyncio.gather(
         *[
             get_json(
                 session=session,
@@ -365,17 +370,32 @@ async def fetch_devto_article_details(
                 semaphore=semaphore,
             )
             for article_id in unique_ids
-        ]
+        ],
+        return_exceptions=True,
     )
 
-    return [
-        create_raw_response(
-            endpoint=f"articles/{article_id}",
-            payload=payload,
-            source_item_id=article_id,
+    raw_responses: list[dict[str, Any]] = []
+
+    for article_id, result in zip(unique_ids, results, strict=True):
+        if isinstance(result, aiohttp.ClientResponseError):
+            if result.status == 404:
+                print(f"Skipping Dev.to article {article_id}: 404 Not Found")
+                continue
+
+            raise result
+
+        if isinstance(result, Exception):
+            raise result
+
+        raw_responses.append(
+            create_raw_response(
+                endpoint=f"articles/{article_id}",
+                payload=result,
+                source_item_id=article_id,
+            )
         )
-        for article_id, payload in zip(unique_ids, payloads, strict=True)
-    ]
+
+    return raw_responses
 
 
 def extract_devto_article_ids(list_responses: list[dict[str, Any]]) -> list[int]:
